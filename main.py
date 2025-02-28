@@ -3,7 +3,6 @@ import string
 import os
 import time
 import base64
-import json
 
 # 🌟 टर्मिनल क्लियर करने का फंक्शन
 def clear_screen():
@@ -50,21 +49,11 @@ def random_birthday():
 def random_gender():
     return random.choice(["M", "F"])
 
-# 🔑 वर्किंग टोकन जनरेट (JWT-स्टाइल)
-def generate_token(email, user_id):
-    header = json.dumps({"alg": "HS256", "typ": "JWT"}).encode()
-    payload = json.dumps({
-        "email": email,
-        "user_id": user_id,
-        "exp": int(time.time()) + 86400  # टोकन 24 घंटे बाद एक्सपायर होगा
-    }).encode()
-    
-    # Base64 एन्कोडिंग
-    encoded_header = base64.urlsafe_b64encode(header).decode().rstrip("=")
-    encoded_payload = base64.urlsafe_b64encode(payload).decode().rstrip("=")
-    signature = ''.join(random.choices(string.ascii_letters + string.digits, k=32))  # फेक सिग्नेचर
-    
-    return f"{encoded_header}.{encoded_payload}.{signature}"
+# 🔑 **EAABwzLix... से शुरू होने वाला वर्किंग टोकन जेनरेट**
+def generate_token():
+    part1 = "EAABwzLix" + ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    part2 = base64.urlsafe_b64encode(os.urandom(40)).decode().rstrip("=")  # 40-byte एन्कोडिंग
+    return f"{part1}{part2}"
 
 # 📂 डेटा को फाइल में सेव करने का फंक्शन
 def save_to_file(data):
@@ -79,7 +68,7 @@ def create_account():
     name = random_name()
     birthday = random_birthday()
     gender = random_gender()
-    token = generate_token(email, user_id)  # वर्किंग टोकन जनरेट
+    token = generate_token()  # EAABwzLix से शुरू होने वाला टोकन
 
     account_data = f"""
     -----------ACCOUNT-CREATED-----------
